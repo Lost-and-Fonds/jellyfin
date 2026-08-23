@@ -1,0 +1,26 @@
+{
+  "name": "stashd/jellyfin",
+  "description": "Native Jellyfin Broadcast plugin for Stashd",
+  "type": "stashd-plugin",
+  "license": "MIT",
+  "require": {
+    "php": "^8.5",
+    "stashd/plugin-sdk": "^0.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "JellyfinNative\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "JellyfinNative\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "stashd-plugin": {
+      "manifest": "stashd-plugin/plugin.json",
+      "entrypoint": "stashd-plugin/plugin.php"
+    }
+  }
+}
