@@ -64,6 +64,7 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
         if ($request->name === 'refresh-library') {
             return new Sdk\OperationResult(values: [new Sdk\Setting('ok', Sdk\OptionValue::text('true'))]);
         }
+
         try {
             $data = json_decode($response->body(), true, 512, JSON_THROW_ON_ERROR);
         } catch (\Throwable $exception) {
