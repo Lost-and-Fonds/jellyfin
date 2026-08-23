@@ -6,7 +6,7 @@
   "application_runtime": "native",
   "runtime": "php",
   "api_version": "0.1",
-  "entrypoint": "plugin.php",
+  "entrypoint": "stashd-plugin/plugin.php",
   "supported_file_kinds": ["video"],
   "output_path": null,
   "supports_item_rebuild": true,
