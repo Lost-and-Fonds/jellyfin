@@ -1,6 +1,6 @@
 # Stashd Jellyfin plugin
 
-Native Jellyfin Broadcast plugin for Stashd. It publishes eligible Vault video
+Jellyfin Broadcast plugin for Stashd. It publishes eligible Vault video
 assets into a rebuildable Jellyfin-compatible layout and can test, discover, and
 refresh a configured Jellyfin server.
 

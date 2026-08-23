@@ -3,7 +3,7 @@
   "broadcast_key": "jellyfin",
   "name": "Jellyfin Broadcast",
   "version": "0.1.1",
-  "application_runtime": "native",
+  "application_runtime": "plugin",
   "runtime": "php",
   "api_version": "0.1",
   "entrypoint": "stashd-plugin/plugin.php",

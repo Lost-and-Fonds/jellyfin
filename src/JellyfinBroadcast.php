@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JellyfinNative;
+namespace Jellyfin;
 
 use RuntimeException;
 use Stashd\PluginSdk as Sdk;

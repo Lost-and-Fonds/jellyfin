@@ -1,6 +1,6 @@
 {
   "name": "stashd/jellyfin",
-  "description": "Native Jellyfin Broadcast plugin for Stashd",
+  "description": "Jellyfin Broadcast plugin for Stashd",
   "type": "stashd-plugin",
   "license": "MIT",
   "require": {
@@ -9,12 +9,12 @@
   },
   "autoload": {
     "psr-4": {
-      "JellyfinNative\\": "src/"
+      "Jellyfin\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "JellyfinNative\\Tests\\": "tests/"
+      "Jellyfin\\Tests\\": "tests/"
     }
   },
   "extra": {
