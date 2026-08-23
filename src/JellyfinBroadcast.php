@@ -17,8 +17,10 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
     public function publish(Sdk\PublishRequest $request): Sdk\Publication
     {
         $files = [];
+
         foreach ($request->items as $item) {
             $resource = $this->videoResource($item);
+
             if ($resource === null) {
                 continue;
             }
@@ -36,6 +38,7 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
     public function finalize(Sdk\FinalizationRequest $request, Sdk\PluginContext $context): Sdk\Publication
     {
         $server = $this->setting($request->request->settings, 'server_url');
+
         if ($server === null) {
             throw new RuntimeException('Jellyfin server URL is not configured');
         }
@@ -49,6 +52,7 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
     public function operation(Sdk\OperationRequest $request, Sdk\PluginContext $context): Sdk\OperationResult
     {
         $server = $this->setting($request->settings, 'server_url');
+
         if ($server === null) {
             throw new RuntimeException('Jellyfin server URL is not configured');
         }
@@ -61,6 +65,7 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
         $method = $request->name === 'refresh-library' ? 'POST' : 'GET';
         $response = $context->http->request($method, rtrim($server, '/') . $path, [], null, $this->credential($request->settings));
         $this->requireSuccess($response->status, 'Jellyfin request');
+
         if ($request->name === 'refresh-library') {
             return new Sdk\OperationResult(values: [new Sdk\Setting('ok', Sdk\OptionValue::text('true'))]);
         }
@@ -70,9 +75,11 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
         } catch (\Throwable $exception) {
             throw new RuntimeException('Jellyfin returned invalid JSON', 0, $exception);
         }
+
         if (! is_array($data)) {
             throw new RuntimeException('Jellyfin returned invalid JSON');
         }
+
         if ($request->name === 'test-connection') {
             return new Sdk\OperationResult(values: [
                 new Sdk\Setting('ok', Sdk\OptionValue::text('true')),
@@ -82,6 +89,7 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
             ]);
         }
         $choices = [];
+
         foreach (is_array($data['Items'] ?? null) ? $data['Items'] : [] as $item) {
             if (is_array($item) && isset($item['Id'])) {
                 $choices[] = new Sdk\Choice((string) $item['Id'], (string) ($item['Name'] ?? 'Library'));
