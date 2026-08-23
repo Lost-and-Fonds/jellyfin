@@ -11,3 +11,7 @@ the Vault directly.
 Install as `stashd/jellyfin`. Run the provider contract check with
 `./tests/run.sh`; application lifecycle coverage belongs to the core
 integration suite.
+
+## Release artifact
+
+Run `tools/build-oci.sh out/plugin.oci` after installing production dependencies. The output is an OCI image layout; helper-bearing plugins require pinned executable payloads through `PLUGIN_HELPERS_DIR`.
