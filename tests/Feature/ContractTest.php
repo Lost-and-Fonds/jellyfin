@@ -40,11 +40,13 @@ it('preserves the Jellyfin provider contract', function (): void {
         new Sdk\Setting('server_url', Sdk\OptionValue::text('https://jellyfin.test')),
         new Sdk\Setting('credential_name', Sdk\OptionValue::text('jellyfin-api-token')),
     ];
-    $request = new Sdk\PublishRequest('broadcast-1', $settings, [], [
-        new Sdk\Item('item-1', 'A/Title', [new Sdk\ItemResource('asset-1', 'video')]),
+    $request = new Sdk\PublishRequest('broadcast-1', $settings, [
+        new Sdk\Source('source-1', [new Sdk\Setting('season', Sdk\OptionValue::number(3))]),
+    ], [
+        new Sdk\Item('item-1', 'A/Title', [new Sdk\ItemResource('asset-1', 'video')], 'source-1'),
     ]);
     $publication = $plugin->publish($request);
-    jellyfinAssert(($publication->files[0]->relativePath ?? null) === 'Season 01/S01E01 - A_Title.mp4', 'publication layout changed');
+    jellyfinAssert(($publication->files[0]->relativePath ?? null) === 'Season 03/S03E01 - A_Title.mp4', 'publication layout changed');
 
     $http = new JellyfinFixtureHttp();
     $context = new Sdk\PluginContext(http: $http);

@@ -25,10 +25,11 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
                 continue;
             }
             $index = $this->itemIndex($item, $request->items);
+            $season = $this->season($request, $item->sourceReference);
             $files[] = new Sdk\PublishedFile(
                 $item->id,
                 $resource->reference,
-                'Season 01/S01E' . str_pad((string) $index, 2, '0', STR_PAD_LEFT) . ' - ' . $this->sanitize($item->title) . '.mp4',
+                sprintf('Season %02d/S%02dE%02d - %s.mp4', $season, $season, $index, $this->sanitize($item->title)),
             );
         }
 
@@ -81,18 +82,22 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
         }
 
         if ($request->name === 'test-connection') {
+            $serverName = is_string($data['ServerName'] ?? null) ? $data['ServerName'] : 'Jellyfin';
+            $version = is_string($data['Version'] ?? null) ? $data['Version'] : '';
+
             return new Sdk\OperationResult(values: [
                 new Sdk\Setting('ok', Sdk\OptionValue::text('true')),
                 new Sdk\Setting('message', Sdk\OptionValue::text('Jellyfin connection OK.')),
-                new Sdk\Setting('server_name', Sdk\OptionValue::text((string) ($data['ServerName'] ?? 'Jellyfin'))),
-                new Sdk\Setting('version', Sdk\OptionValue::text((string) ($data['Version'] ?? ''))),
+                new Sdk\Setting('server_name', Sdk\OptionValue::text($serverName)),
+                new Sdk\Setting('version', Sdk\OptionValue::text($version)),
             ]);
         }
         $choices = [];
 
         foreach (is_array($data['Items'] ?? null) ? $data['Items'] : [] as $item) {
-            if (is_array($item) && isset($item['Id'])) {
-                $choices[] = new Sdk\Choice((string) $item['Id'], (string) ($item['Name'] ?? 'Library'));
+            if (is_array($item) && is_string($item['Id'] ?? null)) {
+                $label = is_string($item['Name'] ?? null) ? $item['Name'] : 'Library';
+                $choices[] = new Sdk\Choice($item['Id'], $label);
             }
         }
 
@@ -141,6 +146,23 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
         foreach ($items as $index => $candidate) {
             if ($candidate->id === $item->id) {
                 return $index + 1;
+            }
+        }
+
+        return 1;
+    }
+
+    private function season(Sdk\PublishRequest $request, ?string $sourceReference): int
+    {
+        foreach ($request->sources as $source) {
+            if ($source->reference !== $sourceReference) {
+                continue;
+            }
+
+            foreach ($source->settings as $setting) {
+                if ($setting->key === 'season' && $setting->value->kind === 'number') {
+                    return max(1, (int) $setting->value->value);
+                }
             }
         }
 
