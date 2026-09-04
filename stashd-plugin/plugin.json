@@ -31,6 +31,9 @@
   "actions": [
     {"id": "refresh-library", "label": "Refresh Jellyfin library", "intent": "refresh_library", "operation": "refresh-library"}
   ],
+  "jobs": [
+    {"type": "jellyfin.broadcast.refresh_library", "handler": "App\\Jobs\\Handlers\\ExternalBroadcastOperationJobHandler", "workload": "background"}
+  ],
   "requires": {"php": ">=8.5", "extensions": []},
   "architectures": ["amd64", "arm64"]
 }
