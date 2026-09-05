@@ -6,6 +6,7 @@ namespace Jellyfin;
 
 use RuntimeException;
 use Stashd\PluginSdk as Sdk;
+use Uri\Rfc3986\Uri;
 
 final class JellyfinBroadcast implements Sdk\BroadcastPlugin
 {
@@ -43,7 +44,7 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
         if ($server === null) {
             throw new RuntimeException('Jellyfin server URL is not configured');
         }
-        $response = $context->http->request('POST', rtrim($server, '/') . '/Library/Refresh', [], null, $this->credential($request->request->settings));
+        $response = $context->http->request('POST', $this->endpoint($server, '/Library/Refresh'), [], null, $this->credential($request->request->settings));
         $this->requireSuccess($response->status, 'Jellyfin refresh');
         $context->progress->report('remote refresh complete');
 
@@ -64,7 +65,7 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
             default => throw new RuntimeException('Unsupported external operation'),
         };
         $method = $request->name === 'refresh-library' ? 'POST' : 'GET';
-        $response = $context->http->request($method, rtrim($server, '/') . $path, [], null, $this->credential($request->settings));
+        $response = $context->http->request($method, $this->endpoint($server, $path), [], null, $this->credential($request->settings));
         $this->requireSuccess($response->status, 'Jellyfin request');
 
         if ($request->name === 'refresh-library') {
@@ -127,6 +128,13 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
         if ($status < 200 || $status >= 300) {
             throw new RuntimeException($operation . ' returned HTTP ' . $status);
         }
+    }
+
+    private function endpoint(string $server, string $path): string
+    {
+        $uri = Uri::parse(rtrim($server, '/') . '/' . ltrim($path, '/'));
+
+        return $uri?->toString() ?? throw new RuntimeException('Jellyfin server URL is invalid');
     }
 
     private function videoResource(Sdk\Item $item): ?Sdk\ItemResource
