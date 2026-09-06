@@ -162,19 +162,25 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
 
     private function season(Sdk\PublishRequest $request, ?string $sourceReference): int
     {
-        foreach ($request->sources as $source) {
-            if ($source->reference !== $sourceReference) {
-                continue;
-            }
+        $fallbacks = [];
 
+        foreach ($request->sources as $source) {
             foreach ($source->settings as $setting) {
-                if ($setting->key === 'season' && $setting->value->kind === 'number') {
-                    return max(1, (int) $setting->value->value);
+                if ($setting->key !== 'season' || $setting->value->kind !== 'number') {
+                    continue;
                 }
+
+                $season = max(1, (int) $setting->value->value);
+
+                if ($source->reference === $sourceReference) {
+                    return $season;
+                }
+
+                $fallbacks[] = $season;
             }
         }
 
-        return 1;
+        return count($fallbacks) === 1 ? $fallbacks[0] : 1;
     }
 
     private function sanitize(string $value): string

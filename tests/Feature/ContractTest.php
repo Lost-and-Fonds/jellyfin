@@ -48,6 +48,13 @@ it('preserves the Jellyfin provider contract', function (): void {
     $publication = $plugin->publish($request);
     jellyfinAssert(($publication->files[0]->relativePath ?? null) === 'Season 03/S03E01 - A_Title.mp4', 'publication layout changed');
 
+    $fallback = $plugin->publish(new Sdk\PublishRequest('broadcast-2', [], [
+        new Sdk\Source('source-1', [new Sdk\Setting('season', Sdk\OptionValue::number(4))]),
+    ], [
+        new Sdk\Item('item-2', 'Untyped source', [new Sdk\ItemResource('asset-2', 'video')]),
+    ]));
+    jellyfinAssert(($fallback->files[0]->relativePath ?? null) === 'Season 04/S04E01 - Untyped source.mp4', 'single-source season fallback failed');
+
     $http = new JellyfinFixtureHttp();
     $context = new Sdk\PluginContext(http: $http);
     $operation = $plugin->operation(new Sdk\OperationRequest('discover-libraries', $settings), $context);
