@@ -55,6 +55,13 @@ it('preserves the Jellyfin provider contract', function (): void {
     ]));
     jellyfinAssert(($fallback->files[0]->relativePath ?? null) === 'Season 04/S04E01 - Untyped source.mp4', 'single-source season fallback failed');
 
+    $topLevel = $plugin->publish(new Sdk\PublishRequest('broadcast-3', [
+        new Sdk\Setting('season', Sdk\OptionValue::number(4)),
+    ], [], [
+        new Sdk\Item('item-3', 'Top-level season', [new Sdk\ItemResource('asset-3', 'video')]),
+    ]));
+    jellyfinAssert(($topLevel->files[0]->relativePath ?? null) === 'Season 04/S04E01 - Top-level season.mp4', 'top-level season fallback failed');
+
     $http = new JellyfinFixtureHttp();
     $context = new Sdk\PluginContext(http: $http);
     $operation = $plugin->operation(new Sdk\OperationRequest('discover-libraries', $settings), $context);

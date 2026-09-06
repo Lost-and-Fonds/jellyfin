@@ -2,7 +2,7 @@
   "id": "jellyfin",
   "broadcast_key": "jellyfin",
   "name": "Jellyfin Broadcast",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "application_runtime": "plugin",
   "runtime": "php",
   "api_version": "0.1",
