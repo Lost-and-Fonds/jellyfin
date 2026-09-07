@@ -48,6 +48,13 @@ it('preserves the Jellyfin provider contract', function (): void {
     $publication = $plugin->publish($request);
     jellyfinAssert(($publication->files[0]->relativePath ?? null) === 'Season 03/S03E01 - A_Title.mp4', 'publication layout changed');
 
+    $ordered = $plugin->publish(new Sdk\PublishRequest('broadcast-order', [new Sdk\Setting('season', Sdk\OptionValue::number(4))], [], [
+        new Sdk\Item('newer', 'Newer', [new Sdk\ItemResource('newer-asset', 'video')], publishedAt: '2026-08-31T19:00:25+00:00'),
+        new Sdk\Item('older', 'Older', [new Sdk\ItemResource('older-asset', 'video')], publishedAt: '2026-08-24T19:00:25+00:00'),
+    ]));
+    jellyfinAssert(($ordered->files[0]->relativePath ?? null) === 'Season 04/S04E01 - Older.mp4', 'items are not ordered chronologically');
+    jellyfinAssert(($ordered->files[1]->relativePath ?? null) === 'Season 04/S04E02 - Newer.mp4', 'items are not ordered chronologically');
+
     $fallback = $plugin->publish(new Sdk\PublishRequest('broadcast-2', [], [
         new Sdk\Source('source-1', [new Sdk\Setting('season', Sdk\OptionValue::number(4))]),
     ], [

@@ -19,13 +19,15 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
     {
         $files = [];
 
-        foreach ($request->items as $item) {
+        $items = $this->orderedItems($request->items);
+
+        foreach ($items as $item) {
             $resource = $this->videoResource($item);
 
             if ($resource === null) {
                 continue;
             }
-            $index = $this->itemIndex($item, $request->items);
+            $index = $this->itemIndex($item, $items);
             $season = $this->season($request, $item->sourceReference);
             $files[] = new Sdk\PublishedFile(
                 $item->id,
@@ -158,6 +160,21 @@ final class JellyfinBroadcast implements Sdk\BroadcastPlugin
         }
 
         return 1;
+    }
+
+    /** @param list<Sdk\Item> $items
+     * @return list<Sdk\Item>
+     */
+    private function orderedItems(array $items): array
+    {
+        usort($items, static function (Sdk\Item $left, Sdk\Item $right): int {
+            $leftTime = $left->publishedAt === null ? PHP_INT_MAX : strtotime($left->publishedAt);
+            $rightTime = $right->publishedAt === null ? PHP_INT_MAX : strtotime($right->publishedAt);
+
+            return ($leftTime === false ? PHP_INT_MAX : $leftTime) <=> ($rightTime === false ? PHP_INT_MAX : $rightTime);
+        });
+
+        return $items;
     }
 
     private function season(Sdk\PublishRequest $request, ?string $sourceReference): int
