@@ -2,3 +2,5 @@
 /.phpunit.result.cache
 /build/
 /coverage/
+.php-cs-fixer.cache
+.temp/
