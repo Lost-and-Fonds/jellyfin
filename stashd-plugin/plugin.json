@@ -2,7 +2,7 @@
   "id": "jellyfin",
   "broadcast_key": "jellyfin",
   "name": "Jellyfin Broadcast",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "application_runtime": "plugin",
   "runtime": "php",
   "api_version": "0.1",
@@ -18,6 +18,7 @@
   "prunes_after_publish": true,
   "connection_setting_key": "media_server_connection_id",
   "library_setting_key": "library_id",
+  "configuration": {"message": "Connect a media server before rebuilding this Broadcast.", "action_url": "/settings/connections"},
   "credential": {"name": "jellyfin-api-token", "parameter": "X-Emby-Token", "placement": "header"},
   "operations": {
     "test_connection": "test-connection",
